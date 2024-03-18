@@ -92,7 +92,13 @@ DATABASES = {
         'HOST': ''  # mặc định localhost
     }
 }
+import cloudinary
 
+cloudinary.config(
+    cloud_name="diqoacvgx",
+    api_key="973366195185575",
+    api_secret="Gpy6aprEflWcqZNa7mEk8V-Ufe8"
+)
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 

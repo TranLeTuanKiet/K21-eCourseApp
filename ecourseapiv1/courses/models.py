@@ -45,11 +45,11 @@ class ItemBase(BaseModel):
         abstract = True
 
 
-class Lesson(BaseModel):
+class Lesson(ItemBase):
     subject = models.CharField(max_length=255)
     content = RichTextField()
     image = CloudinaryField(null=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    course = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.subject

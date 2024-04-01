@@ -49,7 +49,7 @@ class Lesson(ItemBase):
     subject = models.CharField(max_length=255)
     content = RichTextField()
     image = CloudinaryField(null=True)
-    course = models.ForeignKey(Category, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.subject
@@ -64,6 +64,8 @@ class Interaction(BaseModel):
 
 class Comment(Interaction):
     content = models.CharField(max_length=255)
+
+
 
 class Like(Interaction):
 

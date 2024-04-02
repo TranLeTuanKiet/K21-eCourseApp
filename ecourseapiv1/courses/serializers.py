@@ -39,11 +39,6 @@ class LessonDetailsSerializer(LessonSerializer):
         model = LessonSerializer.Meta.model
         fields = LessonSerializer.Meta.fields + ['content', 'tags']
 
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['id', 'content', 'created_date', 'updated_date', 'user']
-
 class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         data = validated_data.copy()
@@ -60,3 +55,9 @@ class UserSerializer(serializers.ModelSerializer):
                 'write_only': True
             }
         }
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'created_date', 'user']

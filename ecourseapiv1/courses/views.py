@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics, status, parsers, permissions, req
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from courses import serializers, paginators, perms
-from courses.models import Category, Course, Lesson, User, Comment
+from courses.models import Category, Course, Lesson, User, Comment, Like
 
 
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -42,6 +42,11 @@ class LessonViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Lesson.objects.prefetch_related('tags').filter(active=True)
     serializer_class = serializers.LessonDetailsSerializer
 
+    def get_serializer_class(self):
+        if self.request.user.is_authenticated:
+            return serializers.AuthenticatedLessonDetailSerializer
+        return serializers.LessonDetailsSerializer
+
     def get_permissions(self):
         if self.action in ['add_comment']:
             return [permissions.IsAuthenticated()]
@@ -64,6 +69,16 @@ class LessonViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     def add_comment(self, request, pk):
         c = self.get_object().comment_set.create(content=request.data.get('content'), user=request.user)
         return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
+    @action(methods=['post'], url_path='like', detail=True)
+    def like(self, request, pk):
+        li, created = Like.objects.get_or_create(lesson=self.get_object(), user=request.user)
+
+        if not created:
+            li.active = not li.active
+            li.save()
+
+        return Response(serializers.AuthenticatedLessonDetailSerializer(self.get_object()).data)
+
 
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.UpdateAPIView):
@@ -90,4 +105,4 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.UpdateAPIVi
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
-    permission_classes = perms.CommentOwner
+    permission_classes = [perms.CommentOwner]

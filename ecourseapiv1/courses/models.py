@@ -64,7 +64,8 @@ class Interaction(BaseModel):
 
 class Comment(Interaction):
     content = models.CharField(max_length=255)
-
+    def __str__(self):
+        return self.content
 
 
 class Like(Interaction):
